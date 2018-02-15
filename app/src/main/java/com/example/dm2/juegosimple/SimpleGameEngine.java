@@ -74,6 +74,8 @@ public class SimpleGameEngine extends Activity {
         // Bob starts off not moving
         boolean isMoving = false;
 
+        int contador =0;
+
         // He can walk at 150 pixels per second
         float walkSpeedPerSecond = 600;
 
@@ -87,7 +89,6 @@ public class SimpleGameEngine extends Activity {
         int arfX=-500,arfY=-500;
         int guauX=-500,guauY=-500;
 
-        boolean bola=false;
 
         boolean r,facingR=true;
 
@@ -165,22 +166,22 @@ public class SimpleGameEngine extends Activity {
             // Rebota la pelota cuando golpea el borde inferior de la pantalla
             if(ball.getRect().bottom > screenY){
                 ball.reverseYVelocity();
-                ball.clearObstacleY(screenY - 2);
+                ball.clearObstacleY(screenY - 20);
             }
             // Rebota le pelota de vuelta cuando golpee el borde superior de la pantalla
             if(ball.getRect().top < 0){
                 ball.reverseYVelocity();
-                ball.clearObstacleY(12);
+                ball.clearObstacleY(20);
             }
             // Rebota si la ball golpea la pared izquierda
             if(ball.getRect().left < 0){
                 ball.reverseXVelocity();
-                ball.clearObstacleX(2);
+                ball.clearObstacleX(20);
             }
             // Rebota si la ball golpea la pared derecha
-            if(ball.getRect().right > screenX - 10){
+            if(ball.getRect().right > screenX){
                 ball.reverseXVelocity();
-                ball.clearObstacleX(screenX - 22);
+                ball.clearObstacleX(screenX - 20);
             }
 
 
@@ -192,16 +193,7 @@ public class SimpleGameEngine extends Activity {
             // If bob is moving (the player is touching the screen)
             // then move him to the right based on his target speed and the current fps.
 
-            if(bobXPosition<=ball.getRect().right&&bobXPosition+bitmapBob.getWidth()>=ball.getRect().left&&screenY/2-bitmapBob.getHeight()/2<=ball.getRect().top&&screenY/2+bitmapBob.getHeight()/2>=ball.getRect().bottom)
-            {
-                guauX=50;
-                guauY=50;
 
-            }
-            else{
-                guauX=-500;
-                guauY=-500;
-            }
 
             //Integer aux = screenY/2-bitmapBob.getHeight()/2;
             //Log.i("Y_RESTA",aux.toString());
@@ -258,6 +250,16 @@ public class SimpleGameEngine extends Activity {
                 canvas.drawBitmap(arf, arfX, arfY, paint);
                 canvas.drawBitmap(guau, guauX, guauY, paint);
 
+                // Traza el HUD
+                // Elige el color del pincel para dibujar
+                paint.setColor(Color.argb(255,  255, 255, 255));
+
+                // Traza el score
+                paint.setTextSize(40);
+                canvas.drawText("Score: " + contador , 10,50, paint);
+
+
+
                 // Draw everything to the screen
                 ourHolder.unlockCanvasAndPost(canvas);
 
@@ -265,10 +267,11 @@ public class SimpleGameEngine extends Activity {
             }
 
         }
-        public void createBricksAndRestart(){
+        public void restart(){
 
             // Pon la ball de vuelta en el inicio
-            ball.reset(screenX, screenY);
+
+            ball.reset((int)Math.round(Math.random()*screenX), (int)Math.round(Math.random()*screenY));
 
         }
 
@@ -302,6 +305,9 @@ public class SimpleGameEngine extends Activity {
                 // Player has touched the screen
                 case MotionEvent.ACTION_DOWN:
 
+                    guauX=-500;
+                    guauY=-500;
+
                     // Set isMoving so Bob is moved in the update method
                     if(motionEvent.getX() > screenX / 2) {
                         if(facingR) {
@@ -330,6 +336,15 @@ public class SimpleGameEngine extends Activity {
 
                 // Player has removed finger from screen
                 case MotionEvent.ACTION_UP:
+                    if(bobXPosition<=ball.getRect().right&&bobXPosition+bitmapBob.getWidth()>=ball.getRect().left&&screenY/2-bitmapBob.getHeight()/2<=ball.getRect().top&&screenY/2+bitmapBob.getHeight()/2>=ball.getRect().bottom)
+                    {
+                        guauX=(int)bobXPosition+40;
+                        guauY=bitmapBob.getHeight()-50;
+                        contador++;
+                        restart();
+
+                    }
+
                     //Integer aux = bitmapBob.getWidth();
                     //Log.i("WIDTH-------------",aux.toString());
                     //Float aux2 = bobXPosition;
