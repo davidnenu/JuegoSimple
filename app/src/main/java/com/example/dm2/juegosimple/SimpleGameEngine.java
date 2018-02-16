@@ -69,7 +69,7 @@ public class SimpleGameEngine extends Activity {
         private long timeThisFrame;
 
         // Declare an object of type Bitmap
-        Bitmap bitmapBob,guau,arf;
+        Bitmap bitmapBob,guau,arf,inicio;
 
         // Bob starts off not moving
         boolean isMoving = false;
@@ -88,6 +88,7 @@ public class SimpleGameEngine extends Activity {
 
         int arfX=-500,arfY=-500;
         int guauX=-500,guauY=-500;
+        int inicioX,inicioY;
 
 
         boolean r,facingR=true;
@@ -114,15 +115,18 @@ public class SimpleGameEngine extends Activity {
 
             screenX = size.x;
             screenY = size.y;
+            inicioX=screenX/2-200;
+            inicioY=screenY/2-250;
 
             // Initialize ourHolder and paint objects
             ourHolder = getHolder();
             paint = new Paint();
 
-            // Load Bob from his .png file
+            // Load from .png file
             bitmapBob = BitmapFactory.decodeResource(this.getResources(), R.drawable.bob);
             arf = BitmapFactory.decodeResource(this.getResources(), R.drawable.arf);
             guau = BitmapFactory.decodeResource(this.getResources(), R.drawable.guau);
+            inicio = BitmapFactory.decodeResource(this.getResources(), R.drawable.inicio);
 
 
             // Crea una ball
@@ -200,14 +204,14 @@ public class SimpleGameEngine extends Activity {
             //Float aux2 = ball.getRect().top;
             //Log.i("Y_BALL",aux2.toString());
 
-
+            //Mensaje cuando sale de la pantalla el perro por los lados
             if(bobXPosition<=0||bobXPosition>=screenX-bitmapBob.getWidth())
             {
                 arfX=(screenX/2)-bitmapBob.getWidth();
                 arfY=(screenY/2)-bitmapBob.getHeight();
 
             }
-            else{
+            else{//Quito el mensaje cuando el perro vuelve a la pantalla
                 arfX=-500;
                 arfY=-500;
             }
@@ -237,7 +241,10 @@ public class SimpleGameEngine extends Activity {
                 paint.setTextSize(45);
 
                 // Display the current fps on the screen
-                canvas.drawText("FPS:" + fps, 20, 40, paint);
+                canvas.drawText("FPS:" + fps, screenX-150, 40, paint);
+
+                //Instrucciones
+                canvas.drawBitmap(inicio, inicioX, inicioY, paint);
 
                 // Draw bob at bobXPosition, 200 pixels
                 canvas.drawBitmap(bitmapBob, bobXPosition, 200, paint);
@@ -305,6 +312,8 @@ public class SimpleGameEngine extends Activity {
                 // Player has touched the screen
                 case MotionEvent.ACTION_DOWN:
 
+                    inicioX=-1000;
+                    inicioY=-1000;
                     guauX=-500;
                     guauY=-500;
 
@@ -336,6 +345,7 @@ public class SimpleGameEngine extends Activity {
 
                 // Player has removed finger from screen
                 case MotionEvent.ACTION_UP:
+                    //Al levantar el dedo compruebo si el perro esta en contacto con la bola
                     if(bobXPosition<=ball.getRect().right&&bobXPosition+bitmapBob.getWidth()>=ball.getRect().left&&screenY/2-bitmapBob.getHeight()/2<=ball.getRect().top&&screenY/2+bitmapBob.getHeight()/2>=ball.getRect().bottom)
                     {
                         guauX=(int)bobXPosition+40;
